@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>My Playlist</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #0f0f0f;
+  color: white;
+}
+
+header {
+  padding: 20px;
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  background: #181818;
+  position: sticky;
+  top: 0;
+}
+
+.container {
+  max-width: 800px;
+  margin: auto;
+  padding: 20px;
+}
+
+.song {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #1e1e1e;
+  padding: 12px 15px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.song:hover {
+  background: #2a2a2a;
+}
+
+.title {
+  font-size: 14px;
+}
+
+.badge {
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: #333;
+}
+
+.played {
+  border-left: 4px solid #00ff99;
+}
+
+.played .badge {
+  background: #00ff99;
+  color: black;
+}
+</style>
+</head>
+
+<body>
+
+<header>🎵 My Playlist</header>
+<div class="container" id="list"></div>
+
+<script type="module">
+import songs from "./data.js";
+
+const list = document.getElementById("list");
+
+function getPlayedCount(title) {
+  return localStorage.getItem("played_" + title) || 0;
+}
+
+function markPlayed(title) {
+  let count = parseInt(localStorage.getItem("played_" + title) || "0");
+  count++;
+  localStorage.setItem("played_" + title, count);
+  return count;
+}
+
+function render() {
+  list.innerHTML = "";
+
+  songs.forEach((song) => {
+    const played = parseInt(getPlayedCount(song.title)) > 0;
+
+    const div = document.createElement("div");
+    div.className = "song" + (played ? " played" : "");
+
+    div.innerHTML = `
+      <div class="title">${song.title}</div>
+      <div class="badge">${played ? "Played" : "New"}</div>
+    `;
+
+    div.onclick = () => {
+      markPlayed(song.title);
+      window.open(song.url, "_blank");
+      render();
+    };
+
+    list.appendChild(div);
+  });
+}
+
+render();
+</script>
+
+</body>
+</html>
